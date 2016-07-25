@@ -91,3 +91,117 @@ GLfloat * grMat4Ptr(grMat4 m)
 {
 	return m.m[0].v;
 }
+
+GLfloat * grVec4Ptr(grVec4 m)
+{
+	return m.v;
+}
+
+inline grMat4 grMat4Ones()
+{
+	grMat4 m;
+	m.m[0] = grV4(1.0, 1.0, 1.0, 1.0);
+	m.m[1] = grV4(1.0, 1.0, 1.0, 1.0);
+	m.m[2] = grV4(1.0, 1.0, 1.0, 1.0);
+	m.m[3] = grV4(1.0, 1.0, 1.0, 1.0);
+	return m;
+}
+
+inline grMat4 grMat4Identity()
+{
+	grMat4 m;
+	m.m[0] = grV4(1.0, 0.0, 0.0, 0.0);
+	m.m[1] = grV4(0.0, 1.0, 0.0, 0.0);
+	m.m[2] = grV4(0.0, 0.0, 1.0, 0.0);
+	m.m[3] = grV4(0.0, 0.0, 0.0, 1.0);
+	return m;
+}
+
+inline grMat4 grMat4Translate(grMat4 mat, const grVec4 v)
+{
+	mat.m[0].w += v.x;
+	mat.m[1].w += v.y;
+	mat.m[2].w += v.z;
+	return mat;
+}
+
+inline grMat4 grMat4Scale(grMat4 m, const grVec4 v)
+{
+	m.m[0].x += v.x;
+	m.m[1].y += v.y;
+	m.m[2].z += v.z;
+	return m;
+}
+
+inline grMat4 grMat4Rotate(grMat4 m, grVec4 a, const grFloat rotation)
+{
+	grVec4 a2 = grVec4Mult(a, a);
+
+	grFloat c = cos(rotation);
+	grFloat s = sin(rotation);
+	grVec4 m0 = grV4(c + a2.x * (1.0 - c), a.x * a.y * (1.0 - c) - a.z * s, a.x * a.z * (1.0 - c) + a.y * s, 0.0);
+	grVec4 m1 = grV4(a.x * a.y * (1.0 - c) + a.z * s, c + a2.y * (1.0 - c), a.y * a.y * (1.0 - c) - a.x * s, 0.0);
+	grVec4 m2 = grV4(a.x * a.z * (1.0 - c) - a.y * s, a.y * a.y * (1.0 - c) + a.x * s, c + a2.z * (1.0 - c), 0.0);
+	m.m[0] = grVec4Add(m.m[0], m0);
+	m.m[1] = grVec4Add(m.m[1], m1);
+	m.m[2] = grVec4Add(m.m[2], m2);
+
+	return m;
+}
+
+inline grFloat grDegreesToRadian(const grFloat a)
+{
+	return a * DEGTORAD;
+}
+
+inline grFloat grRadiansToDegrees(const grFloat a)
+{
+	return a / DEGTORAD;
+}
+
+inline grVec2 grV2(const grFloat x, const grFloat y)
+{
+	grVec2 v = { x, y };
+	return v;
+}
+
+inline grVec2 grVec2Add(const grVec2 a, const grVec2 b)
+{
+	return grV2(a.x + b.x, a.y + b.y);
+}
+
+inline grVec2 grVec2Sub(const grVec2 a, const grVec2 b)
+{
+	return grV2(a.x - b.x, a.y - b.y);
+}
+
+inline grVec2 grVec2Mult(const grVec2 a, const grVec2 b)
+{
+	return grV2(a.x * b.x, a.y * b.y);
+}
+
+inline grVec2 grVec2Div(const grVec2 a, const grVec2 b)
+{
+	return grV2(a.x / b.x, a.y / b.y);
+}
+
+inline grVec2 grVec2Scale(const grVec2 a, const grFloat b)
+{
+	return grV2(a.x * b, a.y * b );
+}
+
+inline grVec2 grVec2Normalize(const grVec2 a)
+{
+	grFloat len = grVec2Length(a);
+	return grVec2Scale(a, 1.0 / len);
+}
+
+inline grFloat grVec2Length(const grVec2 a)
+{
+	return sqrt(a.x + a.y);
+}
+
+inline grFloat grVec2LengthSqr(const grVec2 a)
+{
+	return a.x + a.y;
+}

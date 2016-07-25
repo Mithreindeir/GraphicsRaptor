@@ -2,17 +2,24 @@
 #define HEADER_GRRESOURCE
 #include "graphicsraptor.h"
 #include "grMath.h"
+#include <SOIL.h>
 
 typedef struct grTexture
 {
 	GLuint id;
 	int width, height;
+	int internal_f;
+	int image_f;
 } grTexture;
 
 typedef struct grShader
 {
 	GLuint id;
 } grShader;
+
+grTexture* grTextureAlloc();
+grTexture* grTextureInit(grTexture* texture, GLuint w, GLuint h, unsigned char* dat);
+grTexture* grTextureLoadFromFile(grTexture* texture, const char* file, int alpha);
 
 grShader* grShaderAlloc();
 grShader* grShaderInit(grShader* shader);

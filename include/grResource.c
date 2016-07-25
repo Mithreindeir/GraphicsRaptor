@@ -1,5 +1,47 @@
 #include "grResource.h"
 
+grTexture * grTextureAlloc()
+{
+	return malloc(sizeof(grTexture));
+}
+
+grTexture * grTextureInit(grTexture * texture, GLuint w, GLuint h, unsigned char * dat)
+{
+	glGenTextures(1, &texture->id);
+	texture->width = w;
+	texture->height = h;
+
+	glBindTexture(GL_TEXTURE_2D, texture->id);
+	glTexImage2D(GL_TEXTURE_2D, 0, texture->internal_f, w, h, 0, texture->image_f, GL_UNSIGNED_BYTE, dat);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	return texture;
+}
+
+grTexture * grTextureLoadFromFile(grTexture * texture, const char * file, int alpha)
+{
+	if (alpha)
+	{
+		texture->image_f = GL_RGBA;
+		texture->internal_f = GL_RGBA;
+	}
+	else
+	{
+		texture->image_f = GL_RGB;
+		texture->internal_f = GL_RGB;
+	}
+	int w, h;
+	unsigned char* image = SOIL_load_image(file, &w, &h, 0, alpha ? SOIL_LOAD_RGBA : SOIL_LOAD_RGB);
+	texture = grTextureInit(texture, w, h, image);
+	SOIL_free_image_data(image);
+	return texture;
+}
+
 grShader * grShaderAlloc()
 {
 	return malloc(sizeof(grShader));
@@ -8,6 +50,7 @@ grShader * grShaderAlloc()
 grShader * grShaderInit(grShader * shader)
 {
 	shader->id = -1;
+	
 	return shader;
 }
 
