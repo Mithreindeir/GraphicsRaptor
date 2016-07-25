@@ -1,4 +1,4 @@
-#include "grResource.h"
+#include "../include/grResource.h"
 
 grTexture * grTextureAlloc()
 {
