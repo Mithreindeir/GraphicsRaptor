@@ -7,8 +7,8 @@ grSprite * grSpriteAlloc()
 
 grSprite * grSpriteInit(grSprite * sprite)
 {
-	sprite->vbo = -1.0;
+	sprite->vbo = -1;
 	glGenBuffers(1, &sprite->vbo);
-	static_assert(1);
 	return sprite;
 }
+

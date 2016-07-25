@@ -5,7 +5,6 @@ void grInit()
 	keypressed = NULL;
 	keyreleased = NULL;
 	glfwInit();
-
 }
 
 void grDestroy(grWindow * window)

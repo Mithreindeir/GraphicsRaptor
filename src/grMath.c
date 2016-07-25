@@ -1,6 +1,6 @@
 #include "../include/grMath.h"
 
-inline grVec4 grV4(const double x, const double y, const double z, const double w)
+inline grVec4 grV4(const grFloat x, const grFloat y, const grFloat z, const grFloat w)
 {
 	grVec4 v = { x, y, z, w };
 	return v;
@@ -26,23 +26,23 @@ inline grVec4 grVec4Div(const grVec4 a, const grVec4 b)
 	return grV4(a.x / b.x, a.y / b.y, a.z / b.z, a.w / b.w);
 }
 
-inline grVec4 grVec4Scale(const grVec4 a, const double b)
+inline grVec4 grVec4Scale(const grVec4 a, const grFloat b)
 {
 	return grV4(a.x * b, a.y * b, a.z * b, a.w * b);
 }
 
 inline grVec4 grVec4Normalize(const grVec4 a)
 {
-	double l = grVec4Length(a);
+	grFloat l = grVec4Length(a);
 	return grV4(a.x/l, a.y/l, a.z/l, a.w/l);
 }
 
-inline double grVec4Length(const grVec4 a)
+inline grFloat grVec4Length(const grVec4 a)
 {
 	return sqrt(a.x + a.y + a.z + a.w);
 }
 
-inline double grVec4LengthSqr(const grVec4 a)
+inline grFloat grVec4LengthSqr(const grVec4 a)
 {
 	return (a.x + a.y + a.z + a.w);
 }
@@ -67,7 +67,7 @@ inline grMat4 grM4(const grVec4 m, const grVec4 m2, const grVec4 m3, const grVec
 	return mt;
 }
 
-inline grMat4 grOrtho(double right, double left, double top, double bottom, double front, double back)
+inline grMat4 grOrtho(grFloat right, grFloat left, grFloat top, grFloat bottom, grFloat front, grFloat back)
 {
 	grMat4 m;
 	m.m[0] = grV4(1.0 / (left - right), 0, 0, 0);
@@ -77,7 +77,7 @@ inline grMat4 grOrtho(double right, double left, double top, double bottom, doub
 	return m;
 }
 
-inline grMat4 grPerspective(double fovy, double aspect, double front, double back)
+inline grMat4 grPerspective(grFloat fovy, grFloat aspect, grFloat front, grFloat back)
 {
 	grMat4 m;
 	m.m[0] = grV4(atan(aspect/2.0), 0, 0, 0);
@@ -87,3 +87,7 @@ inline grMat4 grPerspective(double fovy, double aspect, double front, double bac
 	return m;
 }
 
+GLfloat * grMat4Ptr(grMat4 m)
+{
+	return m.m[0].v;
+}

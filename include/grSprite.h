@@ -2,12 +2,7 @@
 #define HEADER_GRSPRITE
 
 #include "graphicsraptor.h"
-
-typedef struct grTexture
-{
-	GLuint id;
-	int width, height;
-} grTexture;
+#include "grResource.h"
 
 typedef struct grSprite
 {
@@ -17,6 +12,5 @@ typedef struct grSprite
 
 grSprite* grSpriteAlloc();
 grSprite* grSpriteInit(grSprite* sprite);
-
 
 #endif
