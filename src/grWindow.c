@@ -16,7 +16,7 @@ void grDestroy(grWindow * window)
 
 grWindow * grWindowAlloc()
 {
-	return malloc(sizeof(grWindow));
+	return (grWindow*)malloc(sizeof(grWindow));
 }
 
 grWindow * grWindowInit(grWindow * window, int width, int height)
@@ -33,10 +33,14 @@ grWindow * grWindowInit(grWindow * window, int width, int height)
 	glewInit();
 
 	glfwSwapInterval(1);
-	glfwSetKeyCallback(window, default_key_callback);
+	glfwSetKeyCallback(window->window, default_key_callback);
 	glViewport(0, 0, width, height);
 	window->userData = NULL;
 	window->userFunc = NULL;
+	
+	glEnable(GL_CULL_FACE);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	return window;
 
 }
@@ -62,13 +66,13 @@ void grMainLoop(grWindow * window)
 {
 	while (!glfwWindowShouldClose(window->window))
 	{
-		glClearColor(0.2, 0.2, 0.2, 1.0);
+		glfwPollEvents();
+
+		glClearColor(0.0, 0.0, 0.0, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT);
 		if (window->userFunc)
 			window->userFunc(window->userData);
 
 		glfwSwapBuffers(window->window);
-		glfwPollEvents();
-
 	}
 }

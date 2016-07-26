@@ -71,7 +71,7 @@ inline grMat4 grOrtho(grFloat right, grFloat left, grFloat top, grFloat bottom)
 {
 	grMat4 m;
 	m.m[0] = grV4(2.0 / (left - right), 0, 0, -1);
-	m.m[1] = grV4(0, 2.0 / (bottom - top), 0, 1);
+	m.m[1] = grV4(0, 2.0 / (top - bottom), 0, 1);
 	m.m[2] = grV4(0, 0, -1, 0.0);
 	m.m[3] = grV4(0, 0, 0, 1.0);
 	return m;
@@ -87,14 +87,14 @@ inline grMat4 grPerspective(grFloat fovy, grFloat aspect, grFloat front, grFloat
 	return m;
 }
 
-GLfloat * grMat4Ptr(grMat4 m)
+const GLfloat * grMat4Ptr(const grMat4* m)
 {
-	return m.n;
+	return m->n[0];
 }
 
-GLfloat * grVec4Ptr(grVec4 m)
+const GLfloat * grVec4Ptr(const grVec4* m)
 {
-	return m.v;
+	return m->v;
 }
 
 inline grMat4 grMat4Ones()
@@ -127,49 +127,82 @@ inline grMat4 grMat4Identity()
 	return m;
 }
 
-inline grMat4 grMat4Translate(grMat4 mat, const grVec4 v)
+inline grMat4 grMat4Multiply(const grMat4 a, const grMat4 b)
 {
-	mat.m[0].w += v.x;
-	mat.m[1].w += v.y;
-	mat.m[2].w += v.z;
+	grMat4 c = grMat4Zeroes();
+	for (int i = 0; i<4; ++i)
+		for (int j = 0; j<4; ++j)
+			for (int k = 0; k<4; ++k)
+				c.m[j].v[i] += a.m[k].v[i] * b.m[j].v[k];
+	return c;
+}
 
-	return mat;
+inline grMat4 grMat4Translate(const grMat4 m, const grVec4 v)
+{
+	grMat4 Result = m;
+	Result.m[0].v[3] = m.m[0].v[0] * v.x + m.m[0].v[1] * v.y + m.m[0].v[2] * v.z + m.m[0].v[3];
+	Result.m[1].v[3] = m.m[1].v[0] * v.x + m.m[1].v[1] * v.y + m.m[1].v[2] * v.z + m.m[1].v[3];
+	Result.m[2].v[3] = m.m[2].v[0] * v.x + m.m[2].v[1] * v.y + m.m[2].v[2] * v.z + m.m[2].v[3];
+	Result.m[3].v[3] = m.m[3].v[0] * v.x + m.m[3].v[1] * v.y + m.m[3].v[2] * v.z + m.m[3].v[3];
+	return Result;
 }
 
 inline grMat4 grMat4Scale(grMat4 m, const grVec4 v)
 {
-	m.m[0].x *= v.x;
-	m.m[1].y *= v.y;
-	m.m[2].z *= v.z;
-	return m;
+	grMat4 Result;
+	Result.m[0].v[0] = m.m[0].v[0] * v.v[0];
+	Result.m[1].v[0] = m.m[1].v[0] * v.v[0];
+	Result.m[2].v[0] = m.m[2].v[0] * v.v[0];
+	Result.m[3].v[0] = m.m[3].v[0] * v.v[0];
+
+	Result.m[0].v[1] = m.m[0].v[1] * v.v[1];
+	Result.m[1].v[1] = m.m[1].v[1] * v.v[1];
+	Result.m[2].v[1] = m.m[2].v[1] * v.v[1];
+	Result.m[3].v[1] = m.m[3].v[1] * v.v[1];
+
+	Result.m[0].v[2] = m.m[0].v[2] * v.v[2];
+	Result.m[1].v[2] = m.m[1].v[2] * v.v[2];
+	Result.m[2].v[2] = m.m[2].v[2] * v.v[2];
+	Result.m[3].v[2] = m.m[3].v[2] * v.v[2];
+
+	Result.m[0].v[3] = m.m[0].v[3];
+	Result.m[1].v[3] = m.m[1].v[3];
+	Result.m[2].v[3] = m.m[2].v[3];
+	Result.m[3].v[3] = m.m[3].v[3];
+
+	return Result;
 }
 
 inline grMat4 grMat4Rotate(grMat4 m, grVec4 a, const grFloat rotation)
 {
-	a = grVec4Normalize(a);
+	
 
 	grFloat c = cos(rotation);
 	grFloat s = sin(rotation);
-	grVec4 temp = grVec4Scale(a, (1.0 - c));
-	grVec4 m0;
-	m0.x = c + temp.x * a.x;
-	m0.y = 0 + temp.x * a.y + s * a.z;
-	m0.z = 0 + temp.x * a.z - s * a.y;
-	grVec4 m1;
-	m1.x = 0 + temp.y * a.x - s * a.z;
-	m1.y = c + temp.y * a.y;
-	m1.z = 0 + temp.y * a.z + s * a.x;
-	grVec4 m2;
-	m2.x = 0 + temp.z * a.x + s * a.y;
-	m2.y = 0 + temp.z * a.y - s * a.x;
-	m2.z = c + temp.z * a.z;
+	grMat4 Result;
 
-	grMat4 r = grMat4Zeroes();
-	r.m[0] = grVec4Add(grVec4Add(grVec4Scale(m.m[0], m0.x), grVec4Scale(m.m[1], m0.y)), grVec4Scale(m.m[2], m0.z));
-	r.m[1] = grVec4Add(grVec4Add(grVec4Scale(m.m[0], m1.x), grVec4Scale(m.m[1], m1.y)), grVec4Scale(m.m[2], m1.z));
-	r.m[2] = grVec4Add(grVec4Add(grVec4Scale(m.m[0], m2.x), grVec4Scale(m.m[1], m2.y)), grVec4Scale(m.m[2], m2.z));
+	grVec4 axis = grVec4Normalize(a);
 
-	return r;
+	Result.m[0].v[0] = c + (1 - c)      * axis.x     * axis.x;
+	Result.m[1].v[0] = (1 - c) * axis.x * axis.y + s * axis.z;
+	Result.m[2].v[0] = (1 - c) * axis.x * axis.z - s * axis.y;
+	Result.m[3].v[0] = 0;
+
+	Result.m[0].v[1] = (1 - c) * axis.y * axis.x - s * axis.z;
+	Result.m[1].v[1] = c + (1 - c) * axis.y * axis.y;
+	Result.m[2].v[1] = (1 - c) * axis.y * axis.z + s * axis.x;
+	Result.m[3].v[1] = 0;
+
+	Result.m[0].v[2] = (1 - c) * axis.z * axis.x + s * axis.y;
+	Result.m[1].v[2] = (1 - c) * axis.z * axis.y - s * axis.x;
+	Result.m[2].v[2] = c + (1 - c) * axis.z * axis.z;
+	Result.m[3].v[2] = 0;
+
+	Result.m[0].v[3] = 0;
+	Result.m[1].v[3] = 0;
+	Result.m[2].v[3] = 0;
+	Result.m[3].v[3] = 1;
+	return grMat4Multiply(Result, m);
 }
 
 inline grFloat grDegreesToRadian(const grFloat a)

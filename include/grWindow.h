@@ -4,7 +4,7 @@
 #include "graphicsraptor.h"
 
 
-static int keys[1024];
+int keys[1024];
 typedef void*(*grKeyPressedFunc)(int key);
 typedef void*(*grKeyReleasedFunc)(int key);
 grKeyPressedFunc keypressed;

@@ -3,6 +3,8 @@
 
 #include "graphicsraptor.h"
 #include "grResource.h"
+#include "grMath.h"
+
 
 typedef struct grSprite
 {

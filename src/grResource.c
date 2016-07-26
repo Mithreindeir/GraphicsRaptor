@@ -123,7 +123,14 @@ void grShaderSetVec4(grShader * shader, const GLchar * name, grVec4 v)
 	glUniform4f(glGetUniformLocation(shader->id, name), v.x, v.y, v.z, v.w);
 }
 
-void grShaderSetMat4(grShader * shader, const GLchar * name, grMat4 m)
+void grShaderSetMat4(grShader * shader, const GLchar * name, const grMat4* m)
 {
-	glUniformMatrix4fv(glGetUniformLocation(shader->id, name), 1, GL_FALSE, grMat4Ptr(m));
+	grFloat matrix[4][4];
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 4; j++)
+			matrix[j][i] = 0;
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 4; j++)
+			matrix[j][i] = m->m[j].v[i];
+	glUniformMatrix4fv(glGetUniformLocation(shader->id, name), 1, GL_TRUE, matrix);
 }
