@@ -27,7 +27,11 @@ typedef struct grVec2
 
 typedef struct grMat4
 {
-	grVec4 m[4];
+	union
+	{
+		grVec4 m[4];
+		grFloat n[4][4];
+	};
 } grMat4;
 
 extern inline grVec2 grV2(const grFloat x, const grFloat y);
@@ -50,11 +54,12 @@ extern inline grFloat grVec4Length(const grVec4 a);
 extern inline grFloat grVec4LengthSqr(const grVec4 a);
 extern inline grVec4 grVec4Translate(const grVec4 a, const grMat4 b);
 extern inline grMat4 grM4(const grVec4 m, const grVec4 m2, const grVec4 m3, const grVec4 m4);
-extern inline grMat4 grOrtho(grFloat right,grFloat left,grFloat top,grFloat bottom, grFloat front, grFloat back);
+extern inline grMat4 grOrtho(grFloat right,grFloat left,grFloat top,grFloat bottom);
 extern inline grMat4 grPerspective(grFloat fovy, grFloat aspect, grFloat front, grFloat back);
 GLfloat* grMat4Ptr(grMat4 m);
 GLfloat* grVec4Ptr(grVec4 m);
 extern inline grMat4 grMat4Ones();
+extern inline grMat4 grMat4Zeroes();
 extern inline grMat4 grMat4Identity();
 extern inline grMat4 grMat4Translate(grMat4 m, const grVec4 v);
 extern inline grMat4 grMat4Scale(grMat4 m, const grVec4 v);

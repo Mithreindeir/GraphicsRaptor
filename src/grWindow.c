@@ -34,6 +34,7 @@ grWindow * grWindowInit(grWindow * window, int width, int height)
 
 	glfwSwapInterval(1);
 	glfwSetKeyCallback(window, default_key_callback);
+	glViewport(0, 0, width, height);
 	window->userData = NULL;
 	window->userFunc = NULL;
 	return window;

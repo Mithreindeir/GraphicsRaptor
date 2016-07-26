@@ -4,20 +4,9 @@
 #include "graphicsraptor.h"
 #include "grResource.h"
 
-GLfloat vertices[] = {
-	// Pos      // Tex
-	0.0f, 1.0f, 0.0f, 1.0f,
-	1.0f, 0.0f, 1.0f, 0.0f,
-	0.0f, 0.0f, 0.0f, 0.0f,
-
-	0.0f, 1.0f, 0.0f, 1.0f,
-	1.0f, 1.0f, 1.0f, 1.0f,
-	1.0f, 0.0f, 1.0f, 0.0f
-};
-
 typedef struct grSprite
 {
-	grTexture texture;
+	grTexture* texture;
 	grVec2 size;
 	grVec2 pos;
 	grFloat rotation;
@@ -31,6 +20,8 @@ typedef struct grRenderer
 	grShader* shader;
 } grRenderer;
 
+grSprite* grSpriteAlloc();
+grSprite* grSpriteInit(grSprite* sprite, const char* file);
 grRenderer* grRendererAlloc();
 grRenderer* grRendererInit(grRenderer* sprite);
 void grRendererSprite(grRenderer* renderer, grSprite* sprite);

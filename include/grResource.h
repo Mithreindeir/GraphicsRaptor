@@ -23,6 +23,7 @@ grTexture* grTextureLoadFromFile(grTexture* texture, const char* file, int alpha
 
 grShader* grShaderAlloc();
 grShader* grShaderInit(grShader* shader);
+void grShaderUse(grShader* shader);
 void grShaderCompile(grShader* shader, const GLchar * vs, const GLchar * fs);
 void grShaderSetFloat(grShader* shader, const GLchar* name, GLfloat f);
 void grShaderSetInteger(grShader* shader, const GLchar* name, GLint f);

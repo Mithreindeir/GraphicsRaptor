@@ -49,24 +49,61 @@ grShader * grShaderAlloc()
 
 grShader * grShaderInit(grShader * shader)
 {
-	shader->id = -1;
-	
+	shader->id = 0;
 	return shader;
+}
+
+void grShaderUse(grShader * shader)
+{
+	glUseProgram(shader->id);
 }
 
 void grShaderCompile(grShader * shader, const GLchar * vs, const GLchar * fs)
 {
-	GLuint v, f;
+	GLuint v, f, object;
+	int success;
 	v = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(v, 1, &vs, NULL);
 	glCompileShader(v);
+	GLchar infoLog[1024];
+	if (1)
+	{
+		glGetShaderiv(v, GL_COMPILE_STATUS, &success);
+		if (!success)
+		{
+			glGetShaderInfoLog(v, 1024, NULL, infoLog);
+			printf("| ERROR::SHADER: Compile-time error: Type: VERT\n");
+			printf("%s\n", infoLog);
+			
+		}
+	}
+
+
 	f = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(f, 1, &fs, NULL);
 	glCompileShader(f);
+	if (1)
+	{
+		glGetShaderiv(f, GL_COMPILE_STATUS, &success);
+		if (!success)
+		{
+			glGetShaderInfoLog(f, 1024, NULL, infoLog);
+			printf("| ERROR::SHADER: Compile-time error: Type: FRAG\n");
+			printf("%s\n", infoLog);
+
+		}
+	}
 	shader->id = glCreateProgram();
 	glAttachShader(shader->id, v);
 	glAttachShader(shader->id, f);
 	glLinkProgram(shader->id);
+	glGetProgramiv(shader->id, GL_LINK_STATUS, &success);
+	if (!success)
+	{
+		glGetProgramInfoLog(shader->id, 1024, NULL, infoLog);
+		printf("| ERROR::SHADER: LINK-time error: Type: PROGRAM\n");
+		printf("%s\n", infoLog);
+	}
 	glDeleteShader(v);
 	glDeleteShader(f);
 }
