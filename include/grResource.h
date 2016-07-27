@@ -18,8 +18,8 @@ typedef struct grShader
 } grShader;
 
 grTexture* grTextureAlloc();
-grTexture* grTextureInit(grTexture* texture, GLuint w, GLuint h, unsigned char* dat);
-grTexture* grTextureLoadFromFile(grTexture* texture, const char* file, int alpha);
+grTexture* grTextureInit(grTexture* texture, GLuint w, GLuint h, unsigned char* dat, int interpolate);
+grTexture* grTextureLoadFromFile(grTexture* texture, const char* file, int alpha, int interpolate);
 
 grShader* grShaderAlloc();
 grShader* grShaderInit(grShader* shader);

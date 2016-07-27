@@ -32,28 +32,21 @@ GLchar* default_frag = "#version 330 core\n"
 "{\n"
 "	color = spriteColor * texture(image, TexCoords);\n"
 "}\n\0";
+grQuad* quad;
 
 int
 main(void)
 {
-	grMat4 p = grMat4Identity();
-	p = grMat4Translate(p, grV4(200.0, 200.0, 0, 0));
-	for (int i = 0; i < 4; i++)
-	{
-		for (int j = 0; j < 4; j++)
-			printf("%f  ", p.m[i].v[j]);
-		printf("\n");
-	}
-	
 	grInit();
 	grWindow* wind = grWindowInit(grWindowAlloc(), 640, 640);
 	wind->userFunc = &ml;
 	grShader* default_shader = grShaderInit(grShaderAlloc());
 	grShaderCompile(default_shader, default_vert, default_frag);
 	renderer = grRendererInit(grRendererAlloc());
-	sprite = grSpriteInit(grSpriteAlloc(), "awesomeface.png");
-	sprite->pos = grV2(300, 300);
-	sprite->size = grVec2Scale(sprite->size, 1.0 / 3.0);
+	sprite = grSpriteInit(grSpriteAlloc(), "awesomeface.png", 1);
+	sprite->pos = grV2(0, 0);
+	quad = grQuadInit(grQuadAlloc(), grV2(0, 0), grV2(256, 256), sprite);
+	//sprite->size = grVec2Scale(sprite->size, 0.05);
 	//sprite->rotation = grDegreesToRadian(50);
 	grMat4 proj = grOrtho(0.0, 640.0, 0.0, 640.0);
 	renderer->shader = default_shader;
@@ -66,13 +59,6 @@ main(void)
 }
 void ml(void*m)
 {
-	grRendererSprite(renderer, sprite);
-	//sprite->rotation = grDegreesToRadian(90.0f);
-	sprite->rotation = sin(glfwGetTime());
-	/*
-	sprite->pos.y++;
-	sprite->pos.x--;
-	sprite->size.x++;
-	sprite->size.y--;
-	*/
+	grRendererSprite(renderer, sprite, quad);
+	//sprite->pos.y++;
 }

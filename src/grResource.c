@@ -5,7 +5,7 @@ grTexture * grTextureAlloc()
 	return malloc(sizeof(grTexture));
 }
 
-grTexture * grTextureInit(grTexture * texture, GLuint w, GLuint h, unsigned char * dat)
+grTexture * grTextureInit(grTexture * texture, GLuint w, GLuint h, unsigned char * dat, int interpolate)
 {
 	glGenTextures(1, &texture->id);
 	texture->width = w;
@@ -16,14 +16,22 @@ grTexture * grTextureInit(grTexture * texture, GLuint w, GLuint h, unsigned char
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
+	if (interpolate)
+	{
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	}
+	else
+	{
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	}
+	
 	glBindTexture(GL_TEXTURE_2D, 0);
 	return texture;
 }
 
-grTexture * grTextureLoadFromFile(grTexture * texture, const char * file, int alpha)
+grTexture * grTextureLoadFromFile(grTexture * texture, const char * file, int alpha, int interpolate)
 {
 	if (alpha)
 	{
@@ -37,7 +45,7 @@ grTexture * grTextureLoadFromFile(grTexture * texture, const char * file, int al
 	}
 	int w, h;
 	unsigned char* image = SOIL_load_image(file, &w, &h, 0, alpha ? SOIL_LOAD_RGBA : SOIL_LOAD_RGB);
-	texture = grTextureInit(texture, w, h, image);
+	texture = grTextureInit(texture, w, h, image, interpolate);
 	SOIL_free_image_data(image);
 	return texture;
 }
