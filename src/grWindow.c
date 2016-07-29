@@ -16,7 +16,7 @@ void grDestroy(grWindow * window)
 
 grWindow * grWindowAlloc()
 {
-	return (grWindow*)malloc(sizeof(grWindow));
+	return malloc(sizeof(grWindow));
 }
 
 grWindow * grWindowInit(grWindow * window, int width, int height)

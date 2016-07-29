@@ -57,7 +57,7 @@ grSprite * grSpriteInit(grSprite * sprite, const char * file, int interpolate)
 	sprite->size = grV2(sprite->texture->width, sprite->texture->height);
 	sprite->color = grV4(0.5, 0.5, 0.5, 1.0);
 	sprite->rotation = 0;
-
+	
 	return sprite;
 }
 
@@ -81,6 +81,7 @@ grRenderer * grRendererInit(grRenderer * renderer)
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+	renderer->camera = grCameraInit(grCameraAlloc());
 	return renderer;
 }
 
@@ -89,6 +90,8 @@ void grRendererSprite(grRenderer* renderer, grSprite* sprite, grQuad* quad)
 	grShaderUse(renderer->shader);
 
 	grMat4 model = grMat4Identity();
+	grMat4 view = grCameraGetViewMatrix(renderer->camera);
+
 	model = grMat4Translate(model, grV4(sprite->pos.x, sprite->pos.y, 0.0, 1.0));
 	model = grMat4Translate(model, grV4(0.5f * sprite->size.x, 0.5f * sprite->size.y, 0.0, 1.0));
 	model = grMat4Rotate(model, grV4(0, 0, 1.0, 0), sprite->rotation);
@@ -97,7 +100,7 @@ void grRendererSprite(grRenderer* renderer, grSprite* sprite, grQuad* quad)
 	
 	grShaderSetMat4(renderer->shader, "model", &model);
 	grShaderSetVec4(renderer->shader, "spriteColor", sprite->color);
-
+	grShaderSetMat4(renderer->shader, "view", &view);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, sprite->texture->id);
 

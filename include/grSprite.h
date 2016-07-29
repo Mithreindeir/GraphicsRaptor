@@ -4,6 +4,7 @@
 #include "graphicsraptor.h"
 #include "grResource.h"
 #include "grMath.h"
+#include "grCamera.h"
 
 
 typedef struct grQuad
@@ -25,6 +26,7 @@ typedef struct grRenderer
 	GLuint vbo;
 	GLuint vao;
 	grShader* shader;
+	grCamera* camera;
 } grRenderer;
 
 grQuad* grQuadAlloc();

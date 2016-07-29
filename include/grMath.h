@@ -58,6 +58,9 @@ extern inline grMat4 grOrtho(grFloat right,grFloat left,grFloat top,grFloat bott
 extern inline grMat4 grPerspective(grFloat fovy, grFloat aspect, grFloat front, grFloat back);
 const GLfloat* grMat4Ptr(const grMat4* m);
 const GLfloat* grVec4Ptr(const grVec4* m);
+extern inline grMat4 grLookAt(const grVec4 eye, const grVec4 center, const grVec4 up);
+extern inline grVec4 grVec4Cross(const grVec4 a, const grVec4 b);
+extern inline grFloat grVec4Dot(const grVec4 a, const grVec4 b);
 extern inline grMat4 grMat4Ones();
 extern inline grMat4 grMat4Zeroes();
 extern inline grMat4 grMat4Identity();

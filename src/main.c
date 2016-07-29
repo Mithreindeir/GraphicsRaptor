@@ -14,11 +14,12 @@ GLchar* default_vert = "#version 330 core\n"
 
 "uniform mat4 model; \n"
 "uniform mat4 projection; \n"
+"uniform mat4 view; \n"
 
 "void main()\n"
 "{\n"
 "	TexCoords = vertex.zw; \n"
-"	gl_Position = projection * model * vec4(vertex.xy, 0.0, 1.0); \n"
+"	gl_Position = projection * view * model * vec4(vertex.xy, 0.0, 1.0); \n"
 "}\n\0";
 
 GLchar* default_frag = "#version 330 core\n"
@@ -37,18 +38,21 @@ grQuad* quad;
 int
 main(void)
 {
+
 	grInit();
-	grWindow* wind = grWindowInit(grWindowAlloc(), 640, 640);
+	grWindow* wind = grWindowInit(grWindowAlloc(), 1024, 1024);
 	wind->userFunc = &ml;
 	grShader* default_shader = grShaderInit(grShaderAlloc());
 	grShaderCompile(default_shader, default_vert, default_frag);
 	renderer = grRendererInit(grRendererAlloc());
-	sprite = grSpriteInit(grSpriteAlloc(), "awesomeface.png", 1);
+	sprite = grSpriteInit(grSpriteAlloc(), "map.png", 0);
+	sprite->size = grVec2Scale(sprite->size, 4.0);
+
 	sprite->pos = grV2(0, 0);
-	quad = grQuadInit(grQuadAlloc(), grV2(0, 0), grV2(256, 256), sprite);
+	quad = grQuadInit(grQuadAlloc(), grV2(4*64, 0), grV2(64, 64), sprite);
 	//sprite->size = grVec2Scale(sprite->size, 0.05);
 	//sprite->rotation = grDegreesToRadian(50);
-	grMat4 proj = grOrtho(0.0, 640.0, 0.0, 640.0);
+	grMat4 proj = grOrtho(0.0, 1024.0, 0.0, 1024.0);
 	renderer->shader = default_shader;
 	grShaderUse(renderer->shader);
 	grShaderSetInteger(renderer->shader, "image", 0);
@@ -59,6 +63,5 @@ main(void)
 }
 void ml(void*m)
 {
-	grRendererSprite(renderer, sprite, quad);
-	//sprite->pos.y++;
+	grRendererSprite(renderer, sprite, NULL);
 }

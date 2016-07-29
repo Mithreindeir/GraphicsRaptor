@@ -34,17 +34,18 @@ inline grVec4 grVec4Scale(const grVec4 a, const grFloat b)
 inline grVec4 grVec4Normalize(const grVec4 a)
 {
 	grFloat l = grVec4Length(a);
-	return grV4(a.x/l, a.y/l, a.z/l, a.w/l);
+	l = 1.0 / l;
+	return grVec4Scale(a, l);
 }
 
 inline grFloat grVec4Length(const grVec4 a)
 {
-	return sqrt(a.x + a.y + a.z + a.w);
+	return sqrt(a.x*a.x + a.y*a.y + a.z*a.z);
 }
 
 inline grFloat grVec4LengthSqr(const grVec4 a)
 {
-	return (a.x + a.y + a.z + a.w);
+	return (a.x*a.x + a.y*a.y + a.z*a.z);
 }
 
 inline grVec4 grVec4Translate(const grVec4 a, const grMat4 b)
@@ -95,6 +96,46 @@ const GLfloat * grMat4Ptr(const grMat4* m)
 const GLfloat * grVec4Ptr(const grVec4* m)
 {
 	return m->v;
+}
+
+inline grMat4 grLookAt(const grVec4 eye, const grVec4 center, const grVec4 up)
+{
+	grMat4 r = grMat4Identity();
+	grVec4 f, u, s;
+	f = (grVec4Sub(center, eye));
+	if ((f.x != 0 || f.y != 0 || f.z != 0))
+		f = grVec4Normalize(f);
+	grVec4 nu = up;
+	if ((nu.x != 0 || nu.y != 0 || nu.z != 0))
+		nu = grVec4Normalize(nu);
+	s = (grVec4Cross(f, nu));
+	if ((s.x != 0 || s.y != 0 || s.z != 0))
+		s = grVec4Normalize(s);
+	u = grVec4Cross(s, f);
+
+	r.m[0].v[0] = s.x;
+	r.m[0].v[1] = s.y;
+	r.m[0].v[2] = s.z;
+	r.m[1].v[0] = u.x;
+	r.m[1].v[1] = u.y;
+	r.m[1].v[2] = u.z;
+	r.m[2].v[0] = -f.x;
+	r.m[2].v[1] = -f.y;
+	r.m[2].v[2] = -f.z;
+	r.m[0].v[3] = -grVec4Dot(s, eye);
+	r.m[1].v[3] = -grVec4Dot(u, eye);
+	r.m[2].v[3] = grVec4Dot(f, eye);
+	return r;
+}
+
+inline grVec4 grVec4Cross(const grVec4 a, const grVec4 b)
+{
+	return grV4(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x, a.w);
+}
+
+inline grFloat grVec4Dot(const grVec4 a, const grVec4 b)
+{
+	return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
 inline grMat4 grMat4Ones()
