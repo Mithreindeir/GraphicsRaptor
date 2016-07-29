@@ -18,16 +18,17 @@ grQuad * grQuadAlloc()
 
 grQuad * grQuadInit(grQuad * quad, grVec2 pos, grVec2 size, grSprite * sprite)
 {
+	grVec2 tex_size = grV2(sprite->texture->width, sprite->texture->height);
 	grVec2 p = grV2(0, 0);
 	if (pos.x != 0)
-		p.x = pos.x / sprite->size.x;
+		p.x = pos.x / tex_size.x;
 	if (pos.y != 0)
-		p.y = pos.y / sprite->size.y;
+		p.y = pos.y / tex_size.y;
 	grVec2 s = grV2(0, 0);
 	if (size.x != 0)
-		s.x = size.x / sprite->size.x;
+		s.x = size.x / tex_size.x;
 	if (size.y != 0)
-		s.y = size.y / sprite->size.y;
+		s.y = size.y / tex_size.y;
 
 	quad->vertices = malloc(sizeof(GLfloat) * 24);
 	memset(quad->vertices, 0.0, sizeof(quad->vertices));
@@ -57,9 +58,47 @@ grSprite * grSpriteInit(grSprite * sprite, const char * file, int interpolate)
 	sprite->size = grV2(sprite->texture->width, sprite->texture->height);
 	sprite->color = grV4(0.5, 0.5, 0.5, 1.0);
 	sprite->rotation = 0;
+	sprite->speed = 100;
+	sprite->currentFrame = 0;
+	sprite->frames = 0;
+	sprite->quads = NULL;
 	
 	return sprite;
 }
+
+void grSpriteSetUpAnimation(grSprite * sprite, int cols, int rows)
+{
+	grVec2 size = grV2(sprite->size.x / cols, sprite->size.y / rows);
+	sprite->size = size;
+	int frames = cols*rows;
+	sprite->frames = frames;
+	sprite->quads = calloc(sizeof(grQuad*), frames);
+
+	int cf = 0;
+	for (int i = 0; i < rows; i++)
+	{
+		for (int j = 0; j < cols; j++)
+		{
+			grVec2 pos = grV2(j*size.x, i*size.y);
+			sprite->quads[cf] = grQuadInit(grQuadAlloc(), pos, size, sprite);
+			cf++;
+		}
+	}
+	
+}
+
+void grSpriteUpdate(grSprite * sprite, grFloat dt)
+{
+	sprite->frame_time += 1.0/dt;
+	
+	while (sprite->frame_time > sprite->speed && sprite->speed != 0.0)
+	{
+		sprite->frame_time -= sprite->speed;
+		sprite->currentFrame = sprite->currentFrame < sprite->frames-1 ? sprite->currentFrame + 1 : 0;
+	}
+	
+}
+
 
 grRenderer * grRendererAlloc()
 {
@@ -85,7 +124,12 @@ grRenderer * grRendererInit(grRenderer * renderer, grVec2 size)
 	return renderer;
 }
 
-void grRendererSprite(grRenderer* renderer, grSprite* sprite, grQuad* quad)
+void grSpriteRender(grSprite * sprite, grRenderer * renderer)
+{
+	grRenderSprite(renderer, sprite, sprite->quads[sprite->currentFrame]);
+}
+
+void grRenderSprite(grRenderer* renderer, grSprite* sprite, grQuad* quad)
 {
 	grShaderUse(renderer->shader);
 

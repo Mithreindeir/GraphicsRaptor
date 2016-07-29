@@ -33,7 +33,6 @@ GLchar* default_frag = "#version 330 core\n"
 "{\n"
 "	color = spriteColor * texture(image, TexCoords);\n"
 "}\n\0";
-grQuad* quad;
 
 int
 main(void)
@@ -45,10 +44,13 @@ main(void)
 	grShader* default_shader = grShaderInit(grShaderAlloc());
 	grShaderCompile(default_shader, default_vert, default_frag);
 	renderer = grRendererInit(grRendererAlloc(), grV2(1024, 1024));
-	sprite = grSpriteInit(grSpriteAlloc(), "map.png", 0);
-	sprite->size = grVec2Scale(sprite->size, 4.0);
+	sprite = grSpriteInit(grSpriteAlloc(), "player_run.png", 0);
+	grSpriteSetUpAnimation(sprite, 8, 1);
+	sprite->speed = 300;
+	sprite->size = grVec2Scale(sprite->size, 8.0);
+	sprite->pos = grV2(400, 400);
 	//renderer->camera->zoom.zoomTarget = 2;
-	quad = grQuadInit(grQuadAlloc(), grV2(4*64, 0), grV2(64, 64), sprite);
+	//quad = grQuadInit(grQuadAlloc(), grV2(4*64, 0), grV2(64, 64), sprite);
 	grMat4 proj = grCameraGetProjectionMatrix(renderer->camera);
 	renderer->shader = default_shader;
 	grShaderUse(renderer->shader);
@@ -64,8 +66,10 @@ void ml(void*m)
 {
 	ct = glfwGetTime();
 	vrFloat dt = ct - lt;
-	grRendererSprite(renderer, sprite, NULL);
 	grCameraUpdate(renderer->camera, dt);
+	grSpriteUpdate(sprite, dt);
+	grSpriteRender(sprite, renderer);
+	//grRenderSprite(renderer, sprite, NULL);
 	grShaderUse(renderer->shader);
 	grMat4 proj = grCameraGetProjectionMatrix(renderer->camera);
 	grShaderSetMat4(renderer->shader, "projection", proj);
