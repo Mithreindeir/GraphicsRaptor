@@ -46,8 +46,8 @@ main(void)
 	grShaderCompile(default_shader, default_vert, default_frag);
 	renderer = grRendererInit(grRendererAlloc(), grV2(1024, 1024));
 	sprite = grSpriteInit(grSpriteAlloc(), "map.png", 0);
-	sprite->size = grVec2Scale(sprite->size, 8.0);
-	renderer->camera->zoom.zoomTarget = 0.5;
+	sprite->size = grVec2Scale(sprite->size, 4.0);
+	//renderer->camera->zoom.zoomTarget = 2;
 	quad = grQuadInit(grQuadAlloc(), grV2(4*64, 0), grV2(64, 64), sprite);
 	grMat4 proj = grCameraGetProjectionMatrix(renderer->camera);
 	renderer->shader = default_shader;

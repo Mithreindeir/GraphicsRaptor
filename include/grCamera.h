@@ -6,12 +6,12 @@
 
 typedef struct grCameraShake
 {
-	grVec2 size;
-	grVec2 speed;
-	grVec2 decay;
-	grVec2 duration;
-	grVec2 angle;
-	grVec2 position;
+	grFloat amount;
+	grFloat growth;
+	grFloat time;
+	grFloat frequency;
+	grFloat amplitude;
+	grFloat duration;
 } grCameraShake;
 
 typedef struct grCameraZoom
@@ -43,7 +43,7 @@ void grCameraPan(grCamera* cam, grVec2 move);
 void grCameraZoomLevel(grCamera* cam, grFloat z);
 void grCameraZoomMultiply(grCamera* cam, grFloat z);
 void grCameraZoomAdd(grCamera* cam, grFloat add);
-void grCameraShakeStart(grCamera* cam, grVec2 size, grVec2 speed, grVec2 decay, grVec2 duration);
+void grCameraShakeStart(grCamera* cam, grFloat growth, grFloat amplitude, grFloat frequency);
 void grCameraShakeUpdate(grCamera* cam, grFloat dt);
 void grCameraUpdate(grCamera* cam, grFloat dt);
 void grCameraSetZoom(grCamera* cam, grFloat zoom, grFloat speed);

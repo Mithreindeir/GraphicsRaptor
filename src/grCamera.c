@@ -14,17 +14,18 @@ grCamera * grCameraInit(grCamera * camera, grVec2 size)
 	camera->pos = grV2(0, 0);
 	camera->target = grV2(0, 0);
 	camera->speed = grV2(0.01, 0.01);
-	camera->shake.angle = grV2(0, 0);
-	camera->shake.decay = grV2(0, 0);
-	camera->shake.duration = grV2(0, 0);
-	camera->shake.position = grV2(0, 0);
-	camera->shake.size = grV2(0, 0);
-	camera->shake.speed = grV2(0.1, 0.1);
+
 	camera->zoom.zoom = 1;
 	camera->zoom.zoomTarget = 1;
 	camera->zoom.actualView = size;
 	camera->zoom.view = camera->zoom.actualView;
 	camera->zoom.speed = 0.01;
+	camera->shake.growth = 0;
+	camera->shake.amplitude = 0;
+	camera->shake.frequency = 0;
+	camera->shake.time = 0;
+	camera->shake.amount = 0;
+
 	return camera;
 }
 
@@ -59,36 +60,20 @@ void grCameraZoomAdd(grCamera * cam, grFloat add)
 	cam->zoom.zoomTarget += add;
 }
 
-void grCameraShakeStart(grCamera* cam, grVec2 size, grVec2 speed, grVec2 decay, grVec2 duration)
+
+void grCameraShakeStart(grCamera* cam, grFloat growth, grFloat amplitude, grFloat frequency)
 {
-	cam->shake.size = size;
-	cam->shake.speed = speed;
-	cam->shake.angle.x = (rand() % (3415*2))/100.0;
-	cam->shake.angle.y = (rand() % (3415 * 2)) / 100.0;
-	cam->shake.decay.x = decay.x;
-	cam->shake.decay.y = decay.y;
-	cam->shake.duration.x = duration.x;
-	cam->shake.duration.y = duration.y;
+	cam->shake.growth = growth;
+	cam->shake.amplitude = amplitude;
+	cam->shake.frequency = frequency;
+	cam->shake.amount = 1 + cam->shake.growth;
 }
 
 void grCameraShakeUpdate(grCamera * cam, grFloat dt)
 {
-	if (cam->shake.duration.x*dt < dt)
-	{
-		if (cam->shake.size.x*cam->shake.decay.x < 0)
-			cam->shake.size.x = 0;
-		cam->pos.x += sin(cam->shake.angle.x * cam->shake.speed.x)*cam->shake.size.x;
-	}
-	else
-		cam->shake.duration.x = 0;
-	if (cam->shake.duration.y*dt < dt)
-	{
-		if (cam->shake.size.y*cam->shake.decay.y < 0)
-			cam->shake.size.y = 0;
-		cam->pos.y += sin(cam->shake.angle.y * cam->shake.speed.y)*cam->shake.size.y;
-	}
-	else
-		cam->shake.duration.y = 0;
+	
+	cam->shake.amount = fmax(1.0, powf(cam->shake.amount, 0.9));
+	cam->shake.time += dt;
 }
 
 void grCameraUpdate(grCamera * cam, grFloat dt)
@@ -100,6 +85,10 @@ void grCameraUpdate(grCamera * cam, grFloat dt)
 	cam->pos = grVec2Sub(cam->pos, grVec2Sub(cam->zoom.view, ov));
 	cam->target = grVec2Sub(cam->target, grVec2Sub(cam->zoom.view, ov));
 
+	grFloat la = cam->shake.amount != 0.0 ? log(cam->shake.amount) : cam->shake.amount;
+	grFloat shakeFactor = cam->shake.amplitude * la;
+	grVec2 wave = grV2(sin(cam->shake.time * cam->shake.frequency), cos(cam->shake.time * cam->shake.frequency));
+	cam->pos = grVec2Add(cam->pos, grVec2Scale(wave, shakeFactor));
 	grCameraShakeUpdate(cam, dt);
 }
 
