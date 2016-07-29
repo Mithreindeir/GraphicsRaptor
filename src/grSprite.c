@@ -66,7 +66,7 @@ grRenderer * grRendererAlloc()
 	return malloc(sizeof(grRenderer));
 }
 
-grRenderer * grRendererInit(grRenderer * renderer)
+grRenderer * grRendererInit(grRenderer * renderer, grVec2 size)
 {
 	renderer->vao = 0;
 	renderer->vbo = 0;
@@ -81,7 +81,7 @@ grRenderer * grRendererInit(grRenderer * renderer)
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
-	renderer->camera = grCameraInit(grCameraAlloc());
+	renderer->camera = grCameraInit(grCameraAlloc(), size);
 	return renderer;
 }
 
@@ -98,9 +98,9 @@ void grRendererSprite(grRenderer* renderer, grSprite* sprite, grQuad* quad)
 	model = grMat4Translate(model, grV4(-0.5f * sprite->size.x, -0.5f * sprite->size.y, 0.0, 1.0));
 	model = grMat4Scale(model, grV4(sprite->size.x, sprite->size.y, 0.0, 1.0));
 	
-	grShaderSetMat4(renderer->shader, "model", &model);
+	grShaderSetMat4(renderer->shader, "model", model);
 	grShaderSetVec4(renderer->shader, "spriteColor", sprite->color);
-	grShaderSetMat4(renderer->shader, "view", &view);
+	grShaderSetMat4(renderer->shader, "view", view);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, sprite->texture->id);
 

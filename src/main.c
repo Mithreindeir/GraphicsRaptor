@@ -44,24 +44,30 @@ main(void)
 	wind->userFunc = &ml;
 	grShader* default_shader = grShaderInit(grShaderAlloc());
 	grShaderCompile(default_shader, default_vert, default_frag);
-	renderer = grRendererInit(grRendererAlloc());
+	renderer = grRendererInit(grRendererAlloc(), grV2(1024, 1024));
 	sprite = grSpriteInit(grSpriteAlloc(), "map.png", 0);
-	sprite->size = grVec2Scale(sprite->size, 4.0);
-
-	sprite->pos = grV2(0, 0);
+	sprite->size = grVec2Scale(sprite->size, 8.0);
+	renderer->camera->zoom.zoomTarget = 0.5;
 	quad = grQuadInit(grQuadAlloc(), grV2(4*64, 0), grV2(64, 64), sprite);
-	//sprite->size = grVec2Scale(sprite->size, 0.05);
-	//sprite->rotation = grDegreesToRadian(50);
-	grMat4 proj = grOrtho(0.0, 1024.0, 0.0, 1024.0);
+	grMat4 proj = grCameraGetProjectionMatrix(renderer->camera);
 	renderer->shader = default_shader;
 	grShaderUse(renderer->shader);
 	grShaderSetInteger(renderer->shader, "image", 0);
-	grShaderSetMat4(renderer->shader, "projection", &proj);
+	grShaderSetMat4(renderer->shader, "projection", proj);
 	grMainLoop(wind);
 	grDestroy(wind);
 	return 1;
 }
+vrFloat ct;
+vrFloat lt = 0;
 void ml(void*m)
 {
+	ct = glfwGetTime();
+	vrFloat dt = ct - lt;
 	grRendererSprite(renderer, sprite, NULL);
+	grCameraUpdate(renderer->camera, dt);
+	grShaderUse(renderer->shader);
+	grMat4 proj = grCameraGetProjectionMatrix(renderer->camera);
+	grShaderSetMat4(renderer->shader, "projection", proj);
+	lt = ct;
 }

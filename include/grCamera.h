@@ -4,16 +4,50 @@
 #include "graphicsraptor.h"
 #include "grMath.h"
 
+typedef struct grCameraShake
+{
+	grVec2 size;
+	grVec2 speed;
+	grVec2 decay;
+	grVec2 duration;
+	grVec2 angle;
+	grVec2 position;
+} grCameraShake;
+
+typedef struct grCameraZoom
+{
+	grVec2 view;
+	grVec2 pos;
+	grVec2 actualView;
+	grFloat zoom;
+	grFloat zoomTarget;
+	grFloat speed;
+} grCameraZoom;
+
 typedef struct grCamera
 {
 	grVec4 front;
 	grVec4 up;
 	grVec2 pos;
+	grVec2 target;
+	grVec2 speed;
+	grCameraShake shake;
+	grCameraZoom zoom;
 } grCamera;
 
 grCamera* grCameraAlloc();
-grCamera* grCameraInit(grCamera* camera);
+grCamera* grCameraInit(grCamera* camera, grVec2 size);
 grMat4 grCameraGetViewMatrix(grCamera* cam);
-
+grMat4 grCameraGetProjectionMatrix(grCamera* cam);
+void grCameraPan(grCamera* cam, grVec2 move);
+void grCameraZoomLevel(grCamera* cam, grFloat z);
+void grCameraZoomMultiply(grCamera* cam, grFloat z);
+void grCameraZoomAdd(grCamera* cam, grFloat add);
+void grCameraShakeStart(grCamera* cam, grVec2 size, grVec2 speed, grVec2 decay, grVec2 duration);
+void grCameraShakeUpdate(grCamera* cam, grFloat dt);
+void grCameraUpdate(grCamera* cam, grFloat dt);
+void grCameraSetZoom(grCamera* cam, grFloat zoom, grFloat speed);
+grVec2 grCameraGetPos(grCamera* cam);
+grVec2 grCameraGetMouse(grCamera* cam, grVec2 mouse);
 
 #endif

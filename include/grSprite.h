@@ -35,7 +35,7 @@ grQuad* grQuadInit(grQuad* quad, grVec2 pos, grVec2 size, grSprite* sprite);
 grSprite* grSpriteAlloc();
 grSprite* grSpriteInit(grSprite* sprite, const char* file, int interpolate);
 grRenderer* grRendererAlloc();
-grRenderer* grRendererInit(grRenderer* sprite);
+grRenderer* grRendererInit(grRenderer* sprite, grVec2 size);
 void grRendererSprite(grRenderer* renderer, grSprite* sprite, grQuad* quad);
 
 #endif
